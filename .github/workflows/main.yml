@@ -7,8 +7,8 @@ name: CI
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  # pull_request:
+  #   branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -37,13 +37,13 @@ jobs:
                   .filter(a => a.name.includes("linux"))
                   .map(a => a.browser_download_url)[0];
             })
-            
+
       - name: Install pack
         run: |
           curl -s -L -o pack.tgz ${{ steps.pack-download-url.outputs.result }}
           tar -xvf pack.tgz
-          
+
       - name: Build and publish
         run: |
           echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-          ./pack build --builder gcr.io/buildpacks/builder:v1 --path src/NewRelicDeploymentHook/ --publish ghcr.io/faithlife/newrelic-deployment-hook 
+          ./pack build --builder gcr.io/buildpacks/builder:v1 --path src/NewRelicDeploymentHook/ --publish ghcr.io/faithlife/newrelic-deployment-hook
