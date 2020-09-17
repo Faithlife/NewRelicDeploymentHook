@@ -12,6 +12,7 @@ webhooks:
         name: newrelic-deployment-hook-svc
         namespace: default
         path: "/mutate"
+      caBundle: $CA_BUNDLE
     rules:
       - operations: ["CREATE", "UPDATE"]
         apiGroups: ["apps", ""]
