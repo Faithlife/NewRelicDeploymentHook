@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newrelic-deployment-hook-deployment
+spec:
+  selector:
+    matchLabels:
+      app: newrelic-deployment-hook
+  template:
+    metadata:
+      labels:
+        app: newrelic-deployment-hook
+    spec:
+      containers:
+        - name: newrelic-deployment-hook
+          image: ghcr.io/faithlife/newrelic-deployment-hook
+          env:
+            - name: ASPNETCORE_URLS
+              value: https://0.0.0.0:5001
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: /etc/certs/cert.pfx
+            - name: ASPNETCORE_NewRelicApiKey
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic-api-key
+                  key: api-key
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: certs
+              mountPath: /etc/certs
+              readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: newrelic-deployment-hook-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: newrelic-deployment-hook-svc
+  labels:
+    app: newrelic-deployment-hook
+spec:
+  ports:
+    - port: 443
+      targetPort: 5001
+  selector:
+    app: newrelic-deployment-hook

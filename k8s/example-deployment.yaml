@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-deployment
+  annotations:
+    newRelic: |
+      {"appId":"873945056","revision":"1004"}
+spec:
+  selector:
+    matchLabels:
+      app: example
+  template:
+    metadata:
+      labels:
+        app: example
+    spec:
+      containers:
+        - name: server
+          image: node:14
+          command:
+            - npx
+            - http-echo-server
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-svc
+  labels:
+    app: example
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: example
