@@ -1,0 +1,47 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Determine download URL for latest pack
+        id: pack-download-url
+        uses: actions/github-script@0.4.0
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          result-encoding: string
+          script: |
+            return github.repos.getLatestRelease({
+                owner: "buildpacks",
+                repo: "pack"
+            }).then(result => {
+                return result.data.assets
+                  .filter(a => a.name.includes("linux"))
+                  .map(a => a.browser_download_url)[0];
+            })
+            
+      - name: Install pack
+        run: |
+          curl -s -L -o pack.tgz ${{ steps.pack-download-url.outputs.result }}
+          tar -xvf pack.tgz
+          
+      - name: Build and publish
+        run: ./pack build --builder gcr.io/buildpacks/builder:v1 --path src/NewRelicDeploymentHook/ --publish ghcr.io/faithlife/newrelic-deployment-hook 
