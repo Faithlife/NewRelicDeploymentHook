@@ -4,7 +4,7 @@
 
 1. Create the api key secret.
     ```
-    kubectl create secret generic newrelic-api-key --from-literal=api-key=<yourapikey>`
+    kubectl create secret generic newrelic-api-key --from-literal=api-key=<yourapikey>
     ```
 2. Create the certificate for the webhook.
     ```
