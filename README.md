@@ -20,7 +20,7 @@
     ```
 5. Label the namespace you want to enable deploymet recording.
     ```
-    kubectl label mynamespace newrelic-deployment=enabled
+    kubectl label namespace mynamespace newrelic-deployment=enabled
     ```
 6. Add an annotation to your deployment:
     ```
