@@ -53,9 +53,9 @@ jobs:
 
       - name: Build
         run: |
-          ./pack build --builder gcr.io/buildpacks/builder:v1 --path src/NewRelicDeploymentHook/ --publish ghcr.io/faithlife/newrelic-deployment-hook
+          ./pack build --builder gcr.io/buildpacks/builder:v1 --path src/NewRelicDeploymentHook/ ghcr.io/faithlife/newrelic-deployment-hook
 
       - name: Publish
         if: github.ref == 'refs/heads/master'
         run: |
-          docker push ghcr.io/faithlife/newrelic-deployment-hook
+          docker push ghcr.io/faithlife/newrelic-deployment-hook:latest
